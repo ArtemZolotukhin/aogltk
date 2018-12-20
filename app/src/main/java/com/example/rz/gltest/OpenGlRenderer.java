@@ -195,9 +195,9 @@ public class OpenGlRenderer implements Renderer {
 
             GlTexture iTexture;
 
-            float ix = 0f;
-            float iy = 0f;
-            float iz = 0f;
+            float ix;
+            float iy;
+            float iz;
 
             for (DrawObject drawObject: rootView.getDrawObject().getAllDrawObjectsAndSelf()) {
                 iTexture = drawObject.getGlTexture();
