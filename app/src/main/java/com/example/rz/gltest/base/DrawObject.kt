@@ -14,11 +14,14 @@ class DrawObject {
 
     var glTexture: GlTexture? = null
 
-    private var translateX = 0f
+    var translateX = 0f
+        private set
 
-    private var translateY = 0f
+    var translateY = 0f
+        private set
 
-    private var translateZ = 0f
+    var translateZ = 0f
+        private set
 
     private val drawObjects: MutableList<DrawObject> = ArrayList()
 
@@ -30,6 +33,7 @@ class DrawObject {
         translateY += y
         translateZ += z
     }
+
     fun translate(x: Float, y: Float, z: Float) {
         val dx = x - translateX
         val dy = y - translateY

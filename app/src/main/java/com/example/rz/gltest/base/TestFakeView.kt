@@ -23,6 +23,7 @@ class TestFakeView(val context: Context) : View() {
     override fun getDrawObject(): DrawObject {
         return DrawObject().apply {
             glTexture = texture
+            addTranslate(0.3f, 0.3f, 0f)
         }
     }
 

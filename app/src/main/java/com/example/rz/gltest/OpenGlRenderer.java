@@ -195,16 +195,21 @@ public class OpenGlRenderer implements Renderer {
 
             GlTexture iTexture;
 
+            float ix = 0f;
+            float iy = 0f;
+            float iz = 0f;
+
             for (DrawObject drawObject: rootView.getDrawObject().getAllDrawObjectsAndSelf()) {
                 iTexture = drawObject.getGlTexture();
                 if (!(iTexture == null || iTexture.isDestroyed())) {
                     resetModelMatrix();
-                    translateModelMatrix(drawObject.getX(), drawObject.getY(), drawObject.getZ());
+                    ix = drawObject.getX() + drawObject.getTranslateX();
+                    iy = drawObject.getY() + drawObject.getTranslateY();
+                    iz = drawObject.getZ() + drawObject.getTranslateZ();
                     scaleModelMatrix(drawObject.getWidth(), drawObject.getHeight());
+                    translateModelMatrix(ix, iy, iz);
                     bindMatrix();
-                    glActiveTexture(GL_TEXTURE0);
                     glBindTexture(GL_TEXTURE_2D, iTexture.getTextureRef()[0]);
-                    glUniform1i(uTextureUnitLocation, 0);
                     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
                 }
             }
