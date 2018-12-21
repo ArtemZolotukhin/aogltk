@@ -4,9 +4,10 @@ import android.content.Context;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
 import android.util.Log;
+import android.view.MotionEvent;
 import com.example.rz.gltest.base.DrawObject;
 import com.example.rz.gltest.base.GlTexture;
-import com.example.rz.gltest.base.View;
+import com.example.rz.gltest.base.view.View;
 import com.example.rz.gltest.base.utils.ShaderUtils;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -18,7 +19,7 @@ import java.nio.FloatBuffer;
 import static android.opengl.GLES20.*;
 
 
-public class OpenGlRenderer implements Renderer {
+public class OpenGlRenderer implements Renderer, android.view.View.OnTouchListener {
 
     private static final String LOG_TAG = "OGLR";
 
@@ -45,8 +46,12 @@ public class OpenGlRenderer implements Renderer {
 
     private View rootView;
 
-    public OpenGlRenderer(Context context) {
+    private float width;
+    private float height;
+
+    public OpenGlRenderer(Context context, android.view.View touchIntercept) {
         this.context = context;
+        touchIntercept.setOnTouchListener(this);
     }
 
     public void setRootView(View view) {
@@ -66,6 +71,8 @@ public class OpenGlRenderer implements Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 arg0, int width, int height) {
+        this.width = width;
+        this.height = height;
         glViewport(0, 0, width, height);
         createViewMatrix();
         createProjectionMatrix(width, height);
@@ -206,8 +213,8 @@ public class OpenGlRenderer implements Renderer {
                     ix = drawObject.getX() + drawObject.getTranslateX();
                     iy = drawObject.getY() + drawObject.getTranslateY();
                     iz = drawObject.getZ() + drawObject.getTranslateZ();
-                    scaleModelMatrix(drawObject.getWidth(), drawObject.getHeight());
                     translateModelMatrix(ix, iy, iz);
+                    scaleModelMatrix(drawObject.getWidth(), drawObject.getHeight());
                     bindMatrix();
                     glBindTexture(GL_TEXTURE_2D, iTexture.getTextureRef()[0]);
                     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -234,6 +241,29 @@ public class OpenGlRenderer implements Renderer {
     }
 
     private void scaleModelMatrix(float x, float y) {
+        //TODO ratio
         Matrix.scaleM(mModelMatrix, 0, x, y, 1);
+    }
+
+
+    @Override
+    public boolean onTouch(android.view.View v, MotionEvent event) {
+        if (rootView != null) {
+            float x = event.getX() / width;
+            float y = 1 - event.getY() / height;
+            rootView.handleTouch(x, y, View.TOUCH_UP);
+//            switch (event.getAction()) {
+//                case MotionEvent.ACTION_DOWN:
+//                    rootView.handleTouch(x, y, View.TOUCH_DOWN);
+//                    break;
+//                case MotionEvent.ACTION_UP:
+//                    rootView.handleTouch(x, y, View.TOUCH_UP);
+//                    break;
+//                case MotionEvent.ACTION_MOVE:
+//                    rootView.handleTouch(x, y, View.TOUCH_HOLD);
+//                    break;
+//            }
+        }
+        return false;
     }
 }

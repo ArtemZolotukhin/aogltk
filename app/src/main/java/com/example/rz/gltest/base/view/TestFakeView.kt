@@ -1,8 +1,10 @@
-package com.example.rz.gltest.base
+package com.example.rz.gltest.base.view
 
 import android.content.Context
 import android.graphics.BitmapFactory
 import com.example.rz.gltest.R
+import com.example.rz.gltest.base.DrawObject
+import com.example.rz.gltest.base.GlTexture
 
 class TestFakeView(val context: Context) : View() {
 
@@ -12,7 +14,7 @@ class TestFakeView(val context: Context) : View() {
         val options = BitmapFactory.Options()
         options.inScaled = false
         val bitmap = BitmapFactory.decodeResource(
-                context.resources, R.drawable.zhban, options);
+                context.resources, R.drawable.abb0b634, options)
         texture = GlTexture(bitmap, true)
 
     }
@@ -23,7 +25,7 @@ class TestFakeView(val context: Context) : View() {
     override fun getDrawObject(): DrawObject {
         return DrawObject().apply {
             glTexture = texture
-            addTranslate(0.3f, 0.3f, 0f)
+            z = -0.1f
         }
     }
 

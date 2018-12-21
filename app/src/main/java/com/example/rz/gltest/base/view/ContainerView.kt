@@ -1,6 +1,8 @@
-package com.example.rz.gltest.base
+package com.example.rz.gltest.base.view
 
-class ContainerView: View() {
+import com.example.rz.gltest.base.DrawObject
+
+class ContainerView : View() {
 
 
     private var isDestroyed = false
@@ -11,12 +13,12 @@ class ContainerView: View() {
 
 
         val drawObject = DrawObject()
-        drawObject.addTranslate(x, y ,z)
+        drawObject.addTranslate(x, y, z)
 
         for (child in children) {
             drawObject.addDrawObject(
                 child.getDrawObject().apply {
-                    addTranslate(x, y, z)
+                    addTranslate(x + child.x, y + child.y, z + child.z)
                 }
             )
         }
@@ -37,4 +39,15 @@ class ContainerView: View() {
     }
 
     override fun isDestroyed(): Boolean = isDestroyed
+
+    override fun handleTouch(x: Float, y: Float, touchType: Int): Boolean {
+        for (child in children) {
+            if (child.handleTouch(x, y, touchType)) {
+                return true
+            }
+        }
+        return super.handleTouch(x, y, touchType)
+    }
+
+
 }

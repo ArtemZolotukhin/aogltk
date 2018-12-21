@@ -6,7 +6,11 @@ import android.opengl.GLSurfaceView
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.example.rz.gltest.base.TestFakeView
+import com.example.rz.gltest.base.utils.BitmapUtils
+import com.example.rz.gltest.base.view.Button
+import com.example.rz.gltest.base.view.ContainerView
+import com.example.rz.gltest.base.view.TestFakeView
+import com.example.rz.gltest.base.view.View
 
 class TextureRotationActivity : AppCompatActivity() {
 
@@ -21,12 +25,35 @@ class TextureRotationActivity : AppCompatActivity() {
             finish()
             return
         }
+
+        val rootView = ContainerView()
+
+        val testView = TestFakeView(this)
+        testView.x = 0.2f
+
+        val button = Button(BitmapUtils.Companion.fromResourses(R.drawable.button, this), true)
+        button.onClickListener = object : Button.OnClickListener {
+            override fun onClick(view: View) {
+                testView.x += 0.1f
+                if (testView.x > 1 ) {
+                    testView.x -= 1
+                }
+            }
+        }
+        button.x = 0.2f
+        button.y = 0.2f
+        button.width = 0.2f
+        button.height = 0.2f
+
+        rootView.addChild(testView)
+        rootView.addChild(button)
+
         glSurfaceView = findViewById(R.id.glSurfaceView)
         glSurfaceView?.apply {
 
             setEGLContextClientVersion(2)
-            setRenderer(OpenGlRenderer(this@TextureRotationActivity).apply {
-                setRootView(TestFakeView(context))
+            setRenderer(OpenGlRenderer(this@TextureRotationActivity, this).apply {
+                setRootView(rootView)
             })
         }
     }
