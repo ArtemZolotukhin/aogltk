@@ -4,14 +4,17 @@ import android.graphics.Bitmap
 import android.opengl.GLES20.glDeleteTextures
 import com.example.rz.gltest.base.utils.TextureUtils
 
-class GlTexture(val bitmap: Bitmap, var takeCareBitmap: Boolean): Destroyable {
+class GlTexture(val bitmap: Bitmap, var takeCareBitmap: Boolean) : Destroyable {
 
     private var isDestroyed: Boolean = false
 
     private var textureRef: IntArray? = null
 
-    fun getTextureRef(): IntArray {
-        return textureRef ?: TextureUtils.loadTexture(bitmap, takeCareBitmap).apply { textureRef = this }
+    fun getTextureRef(isReload: Boolean): IntArray {
+        if (isReload or (textureRef == null)) {
+            TextureUtils.loadTexture(bitmap, false).apply { textureRef = this }
+        }
+        return textureRef ?: TextureUtils.loadTexture(bitmap, false).apply { textureRef = this }
     }
 
     override fun destroy() {

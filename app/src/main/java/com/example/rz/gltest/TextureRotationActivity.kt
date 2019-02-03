@@ -2,10 +2,10 @@ package com.example.rz.gltest
 
 import android.app.ActivityManager
 import android.content.Context
-import android.opengl.GLSurfaceView
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import com.example.rz.gltest.base.BaseGlSurfaceView
 import com.example.rz.gltest.base.utils.BitmapUtils
 import com.example.rz.gltest.base.view.Button
 import com.example.rz.gltest.base.view.ContainerView
@@ -14,7 +14,7 @@ import com.example.rz.gltest.base.view.View
 
 class TextureRotationActivity : AppCompatActivity() {
 
-    private var glSurfaceView: GLSurfaceView? = null
+    private var glSurfaceView: BaseGlSurfaceView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +50,6 @@ class TextureRotationActivity : AppCompatActivity() {
 
         glSurfaceView = findViewById(R.id.glSurfaceView)
         glSurfaceView?.apply {
-
             setEGLContextClientVersion(2)
             setRenderer(OpenGlRenderer(this@TextureRotationActivity, this).apply {
                 setRootView(rootView)
@@ -72,5 +71,9 @@ class TextureRotationActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         glSurfaceView?.onResume()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

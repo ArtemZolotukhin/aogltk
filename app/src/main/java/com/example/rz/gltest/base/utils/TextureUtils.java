@@ -7,11 +7,7 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.support.annotation.Nullable;
 
-import static android.opengl.GLES20.GL_TEXTURE0;
-import static android.opengl.GLES20.GL_TEXTURE_2D;
-import static android.opengl.GLES20.glActiveTexture;
-import static android.opengl.GLES20.glBindTexture;
-import static android.opengl.GLES20.glGenTextures;
+import static android.opengl.GLES20.*;
 
 public class TextureUtils {
 

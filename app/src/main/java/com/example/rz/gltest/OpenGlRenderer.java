@@ -1,25 +1,26 @@
 package com.example.rz.gltest;
 
 import android.content.Context;
-import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
 import com.example.rz.gltest.base.DrawObject;
+import com.example.rz.gltest.base.ExtendedRenderer;
 import com.example.rz.gltest.base.GlTexture;
-import com.example.rz.gltest.base.view.View;
 import com.example.rz.gltest.base.utils.ShaderUtils;
+import com.example.rz.gltest.base.view.View;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.List;
 
 import static android.opengl.GLES20.*;
 
 
-public class OpenGlRenderer implements Renderer, android.view.View.OnTouchListener {
+public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTouchListener {
 
     private static final String LOG_TAG = "OGLR";
 
@@ -49,6 +50,8 @@ public class OpenGlRenderer implements Renderer, android.view.View.OnTouchListen
     private float width;
     private float height;
 
+    private boolean isReloadTextures;
+
     public OpenGlRenderer(Context context, android.view.View touchIntercept) {
         this.context = context;
         touchIntercept.setOnTouchListener(this);
@@ -58,7 +61,9 @@ public class OpenGlRenderer implements Renderer, android.view.View.OnTouchListen
         rootView = view;
     }
 
-
+    public void setIsReloadTextures(boolean isReload) {
+        isReloadTextures = isReload;
+    }
 
     @Override
     public void onSurfaceCreated(GL10 arg0, EGLConfig arg1) {
@@ -206,6 +211,8 @@ public class OpenGlRenderer implements Renderer, android.view.View.OnTouchListen
             float iy;
             float iz;
 
+            List<DrawObject> drawObjects = rootView.getDrawObject().getAllDrawObjectsAndSelf();
+
             for (DrawObject drawObject: rootView.getDrawObject().getAllDrawObjectsAndSelf()) {
                 iTexture = drawObject.getGlTexture();
                 if (!(iTexture == null || iTexture.isDestroyed())) {
@@ -216,14 +223,20 @@ public class OpenGlRenderer implements Renderer, android.view.View.OnTouchListen
                     translateModelMatrix(ix, iy, iz);
                     scaleModelMatrix(drawObject.getWidth(), drawObject.getHeight());
                     bindMatrix();
-                    glBindTexture(GL_TEXTURE_2D, iTexture.getTextureRef()[0]);
+                    glBindTexture(GL_TEXTURE_2D, iTexture.getTextureRef(isReloadTextures)[0]);
                     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
                 }
+            }
+            if (!drawObjects.isEmpty()) {
+                isReloadTextures = false;
             }
         }
 
 
+        int error = glGetError();
+        Log.d("OGLR", "error code = " + error + "; string = " + glGetString(error));
         Log.d("OGLR", String.valueOf(System.currentTimeMillis() - lastTime));
+
 
     }
 
@@ -265,5 +278,16 @@ public class OpenGlRenderer implements Renderer, android.view.View.OnTouchListen
 //            }
         }
         return false;
+    }
+
+
+    @Override
+    public void onPause() {
+        isReloadTextures = true;
+    }
+
+    @Override
+    public void onResume() {
+        isReloadTextures = true;
     }
 }
