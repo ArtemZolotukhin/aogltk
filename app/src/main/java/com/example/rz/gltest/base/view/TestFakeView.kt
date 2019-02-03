@@ -25,6 +25,8 @@ class TestFakeView(val context: Context) : View() {
     override fun getDrawObject(): DrawObject {
         return DrawObject().apply {
             glTexture = texture
+            width = this@TestFakeView.width
+            height = this@TestFakeView.height
             z = -0.1f
         }
     }

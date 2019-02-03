@@ -30,6 +30,8 @@ class TextureRotationActivity : AppCompatActivity() {
 
         val testView = TestFakeView(this)
         testView.x = 0.2f
+        testView.width = View.SCREEN_SIZE
+        testView.height = View.SCREEN_SIZE
 
         val button = Button(BitmapUtils.Companion.fromResourses(R.drawable.button, this), true)
         button.onClickListener = object : Button.OnClickListener {

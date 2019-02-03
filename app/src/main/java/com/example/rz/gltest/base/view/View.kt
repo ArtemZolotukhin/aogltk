@@ -11,6 +11,7 @@ abstract class View: Destroyable {
         const val TOUCH_HOLD = 2
         const val TOUCH_UP = 4
         const val TOUCH_LONG_TAP = 8
+        const val SCREEN_SIZE = -1f
     }
 
     var x = 0f
@@ -19,9 +20,9 @@ abstract class View: Destroyable {
 
     var z = 0f
 
-    var width = 0f
+    var width = SCREEN_SIZE
 
-    var height = 0f
+    var height = SCREEN_SIZE
 
     abstract fun getDrawObject(): DrawObject
 

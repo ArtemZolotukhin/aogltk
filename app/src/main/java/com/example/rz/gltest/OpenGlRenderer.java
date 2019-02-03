@@ -50,6 +50,9 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
     private float width;
     private float height;
 
+    private float rWidth;
+    private float rHeight;
+
     private boolean isReloadTextures;
 
     public OpenGlRenderer(Context context, android.view.View touchIntercept) {
@@ -98,6 +101,8 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
         //ratio
         float r = h / w;
 
+        rWidth = 1;
+        rHeight = r;
         float[] vertices = {
                 0f, 1 * r, 1, 0, 0,
                 0f, 0f, 1, 0, 1f,
@@ -166,7 +171,7 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
 //            bottom *= ratio;
             top *= ratio;
         }
-        Log.d(LOG_TAG, "top = " + top + " bottom + " + bottom);
+        log("top = " + top + " bottom + " + bottom);
         Matrix.orthoM(mProjectionMatrix, 0, left, right, bottom, top, near, far);
     }
 
@@ -210,6 +215,8 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
             float ix;
             float iy;
             float iz;
+            float width;
+            float height;
 
             List<DrawObject> drawObjects = rootView.getDrawObject().getAllDrawObjectsAndSelf();
 
@@ -221,7 +228,9 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
                     iy = drawObject.getY() + drawObject.getTranslateY();
                     iz = drawObject.getZ() + drawObject.getTranslateZ();
                     translateModelMatrix(ix, iy, iz);
-                    scaleModelMatrix(drawObject.getWidth(), drawObject.getHeight());
+                    width = calculateWidth(drawObject.getWidth());
+                    height = calculateHeight(drawObject.getHeight());
+                    scaleModelMatrix(width, height);
                     bindMatrix();
                     glBindTexture(GL_TEXTURE_2D, iTexture.getTextureRef(isReloadTextures)[0]);
                     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -232,12 +241,20 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
             }
         }
 
+    }
 
-        int error = glGetError();
-        Log.d("OGLR", "error code = " + error + "; string = " + glGetString(error));
-        Log.d("OGLR", String.valueOf(System.currentTimeMillis() - lastTime));
+    private float calculateWidth(float width) {
+        if (width == View.SCREEN_SIZE) {
+            return rWidth;
+        }
+        return width;
+    }
 
-
+    private float calculateHeight(float height) {
+        if (height == View.SCREEN_SIZE) {
+            return rHeight;
+        }
+        return height;
     }
 
     private void resetModelMatrix() {
@@ -255,15 +272,16 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
 
     private void scaleModelMatrix(float x, float y) {
         //TODO ratio
-        Matrix.scaleM(mModelMatrix, 0, x, y, 1);
+        log("scaleModelMatrix: x = " + x + "; y = " + y + "; rWidth = " + rWidth + "; rHeight = " + rHeight);
+        Matrix.scaleM(mModelMatrix, 0, x / rWidth, y / rHeight, 1);
     }
 
 
     @Override
     public boolean onTouch(android.view.View v, MotionEvent event) {
         if (rootView != null) {
-            float x = event.getX() / width;
-            float y = 1 - event.getY() / height;
+            float x = event.getX() / width * rWidth;
+            float y = (1 - event.getY() / height) * rHeight;
             rootView.handleTouch(x, y, View.TOUCH_UP);
 //            switch (event.getAction()) {
 //                case MotionEvent.ACTION_DOWN:
@@ -289,5 +307,9 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
     @Override
     public void onResume() {
         isReloadTextures = true;
+    }
+
+    private void log(String message) {
+        Log.d("OGLR", message);
     }
 }
