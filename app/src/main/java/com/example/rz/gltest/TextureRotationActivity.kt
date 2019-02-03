@@ -33,8 +33,7 @@ class TextureRotationActivity : AppCompatActivity() {
         testView.width = View.SCREEN_SIZE
         testView.height = View.SCREEN_SIZE
 
-        val button = Button(BitmapUtils.Companion.fromResourses(R.drawable.button, this), true)
-        button.onClickListener = object : Button.OnClickListener {
+        val clickListener = object : Button.OnClickListener {
             override fun onClick(view: View) {
                 testView.x += 0.1f
                 if (testView.x > 1 ) {
@@ -42,13 +41,17 @@ class TextureRotationActivity : AppCompatActivity() {
                 }
             }
         }
-        button.x = 0.2f
-        button.y = 0.2f
-        button.width = 0.2f
-        button.height = 0.2f
-
         rootView.addChild(testView)
-        rootView.addChild(button)
+        for (i in 0..5) {
+            val button = Button(BitmapUtils.Companion.fromResourses(R.drawable.button, this), true)
+            button.onClickListener = clickListener
+            button.x = 0.2f
+            button.y = 0.2f * i
+            button.width = 0.2f
+            button.height = 0.2f
+            rootView.addChild(button)
+        }
+
 
         glSurfaceView = findViewById(R.id.glSurfaceView)
         glSurfaceView?.apply {

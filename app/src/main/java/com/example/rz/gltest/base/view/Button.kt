@@ -42,9 +42,10 @@ class Button(val bitmap: Bitmap, val takeCareBitmap: Boolean): View() {
         if (touchType == TOUCH_UP) {
             if ((x > this.x) and (x < this.x + width) and (y > this.y) and (y < this.y + height)) {
                 onClickListener?.onClick(this)
+                return true
             }
         }
-        return true
+        return false
     }
 
     interface OnClickListener {

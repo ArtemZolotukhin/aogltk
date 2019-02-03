@@ -55,6 +55,8 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
 
     private boolean isReloadTextures;
 
+    private boolean enableLogs = true;
+
     public OpenGlRenderer(Context context, android.view.View touchIntercept) {
         this.context = context;
         touchIntercept.setOnTouchListener(this);
@@ -310,6 +312,16 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
     }
 
     private void log(String message) {
-        Log.d("OGLR", message);
+        if (enableLogs) {
+            Log.d("OGLR", message);
+        }
+    }
+
+    public boolean isEnableLogs() {
+        return enableLogs;
+    }
+
+    public void setEnableLogs(boolean enableLogs) {
+        this.enableLogs = enableLogs;
     }
 }
