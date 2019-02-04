@@ -2,16 +2,33 @@ package com.example.rz.gltest.base.view
 
 import com.example.rz.gltest.base.DrawObject
 
-class ContainerView : View() {
+class ContainerView : ViewParent, View() {
 
 
     private var isDestroyed = false
 
     private val children: MutableList<View> = ArrayList()
 
+    private var isNeedUpdate = true
+
+
+    private var cachedDrawObject: DrawObject? = null
+
     override fun getDrawObject(): DrawObject {
 
+        val drawObject = if (isNeedUpdate) {
+            updateDrawObject()
+        } else {
+            cachedDrawObject ?: updateDrawObject()
+        }
+        cachedDrawObject = drawObject
 
+        isNeedUpdate = false
+
+        return drawObject
+    }
+
+    private fun updateDrawObject(): DrawObject {
         val drawObject = DrawObject()
         drawObject.addTranslate(x, y, z)
 
@@ -22,15 +39,16 @@ class ContainerView : View() {
                 }
             )
         }
-
         return drawObject
     }
 
     fun addChild(view: View) {
+        view.parent = this
         children.add(view)
     }
 
     fun removeChild(view: View) {
+        view.parent = null
         children.remove(view)
     }
 
@@ -49,5 +67,13 @@ class ContainerView : View() {
         return super.handleTouch(x, y, touchType)
     }
 
+    override fun onChildUpdate(view: View) {
+        invalidate()
+    }
+
+    override fun invalidate() {
+        super.invalidate()
+        isNeedUpdate = true
+    }
 
 }

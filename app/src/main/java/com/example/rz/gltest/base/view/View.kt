@@ -24,6 +24,8 @@ abstract class View: Destroyable {
 
     var height = SCREEN_SIZE
 
+    var parent: ViewParent? = null
+
     abstract fun getDrawObject(): DrawObject
 
     /**
@@ -36,6 +38,9 @@ abstract class View: Destroyable {
     @IntDef(value = [TOUCH_DOWN, TOUCH_HOLD, TOUCH_LONG_TAP, TOUCH_UP])
     annotation class TouchType
 
+    open fun invalidate() {
+        parent?.onChildUpdate(this)
+    }
 
 
 }

@@ -9,6 +9,8 @@ import com.example.rz.gltest.base.ExtendedRenderer;
 import com.example.rz.gltest.base.GlTexture;
 import com.example.rz.gltest.base.utils.ShaderUtils;
 import com.example.rz.gltest.base.view.View;
+import com.example.rz.gltest.base.view.ViewParent;
+import org.jetbrains.annotations.NotNull;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -20,7 +22,7 @@ import java.util.List;
 import static android.opengl.GLES20.*;
 
 
-public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTouchListener {
+public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTouchListener, ViewParent {
 
     private static final String LOG_TAG = "OGLR";
 
@@ -54,6 +56,7 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
     private float rHeight;
 
     private boolean isReloadTextures;
+    private boolean isNeedRedraw = true;
 
     private boolean enableLogs = true;
 
@@ -64,6 +67,7 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
 
     public void setRootView(View view) {
         rootView = view;
+        rootView.setParent(this);
     }
 
     public void setIsReloadTextures(boolean isReload) {
@@ -209,6 +213,11 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
 
         long lastTime = System.currentTimeMillis();
 
+//
+//        if (!isNeedRedraw) {
+//            return;
+//        }
+
         if (rootView != null) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -243,6 +252,8 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
             }
         }
 
+        isNeedRedraw = false;
+
     }
 
     private float calculateWidth(float width) {
@@ -273,7 +284,6 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
     }
 
     private void scaleModelMatrix(float x, float y) {
-        //TODO ratio
         log("scaleModelMatrix: x = " + x + "; y = " + y + "; rWidth = " + rWidth + "; rHeight = " + rHeight);
         Matrix.scaleM(mModelMatrix, 0, x / rWidth, y / rHeight, 1);
     }
@@ -304,11 +314,13 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
     @Override
     public void onPause() {
         isReloadTextures = true;
+        isNeedRedraw = true;
     }
 
     @Override
     public void onResume() {
         isReloadTextures = true;
+        isNeedRedraw = true;
     }
 
     private void log(String message) {
@@ -323,5 +335,10 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
 
     public void setEnableLogs(boolean enableLogs) {
         this.enableLogs = enableLogs;
+    }
+
+    @Override
+    public void onChildUpdate(@NotNull View view) {
+        isNeedRedraw = true;
     }
 }

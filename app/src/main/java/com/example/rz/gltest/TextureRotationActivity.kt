@@ -39,6 +39,7 @@ class TextureRotationActivity : AppCompatActivity() {
                 if (testView.x > 1 ) {
                     testView.x -= 1
                 }
+                testView.invalidate()
             }
         }
         rootView.addChild(testView)
