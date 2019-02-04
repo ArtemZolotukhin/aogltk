@@ -9,4 +9,6 @@ interface ExtendedRenderer : GLSurfaceView.Renderer {
 
     fun onResume() {}
 
+    fun setOnRedrawListener(redrawListener: OnNeedRedrawListener)
+
 }

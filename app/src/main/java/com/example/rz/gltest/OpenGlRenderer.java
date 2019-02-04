@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 import com.example.rz.gltest.base.DrawObject;
 import com.example.rz.gltest.base.ExtendedRenderer;
 import com.example.rz.gltest.base.GlTexture;
+import com.example.rz.gltest.base.OnNeedRedrawListener;
 import com.example.rz.gltest.base.utils.ShaderUtils;
 import com.example.rz.gltest.base.view.View;
 import com.example.rz.gltest.base.view.ViewParent;
@@ -59,6 +60,8 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
     private boolean isNeedRedraw = true;
 
     private boolean enableLogs = true;
+
+    private OnNeedRedrawListener onNeedRedrawListener;
 
     public OpenGlRenderer(Context context, android.view.View touchIntercept) {
         this.context = context;
@@ -213,11 +216,6 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
 
         long lastTime = System.currentTimeMillis();
 
-//
-//        if (!isNeedRedraw) {
-//            return;
-//        }
-
         if (rootView != null) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -251,8 +249,6 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
                 isReloadTextures = false;
             }
         }
-
-        isNeedRedraw = false;
 
     }
 
@@ -314,13 +310,18 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
     @Override
     public void onPause() {
         isReloadTextures = true;
-        isNeedRedraw = true;
     }
 
     @Override
     public void onResume() {
         isReloadTextures = true;
-        isNeedRedraw = true;
+        redraw();
+    }
+
+    private void redraw() {
+        if (onNeedRedrawListener != null) {
+            onNeedRedrawListener.onNeedRedraw(true);
+        }
     }
 
     private void log(String message) {
@@ -339,6 +340,15 @@ public class OpenGlRenderer implements ExtendedRenderer, android.view.View.OnTou
 
     @Override
     public void onChildUpdate(@NotNull View view) {
-        isNeedRedraw = true;
+        redraw();
+    }
+
+    public OnNeedRedrawListener getOnNeedRedrawListener() {
+        return onNeedRedrawListener;
+    }
+
+    @Override
+    public void setOnRedrawListener(@NotNull OnNeedRedrawListener redrawListener) {
+        this.onNeedRedrawListener = redrawListener;
     }
 }
